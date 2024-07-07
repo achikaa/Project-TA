@@ -296,6 +296,10 @@ return [
 
         'storage' => Tymon\JWTAuth\Providers\Storage\Illuminate::class,
 
+        'providers' => [
+    // ...
+    Yajra\DataTables\DataTablesServiceProvider::class,
+],
     ],
 
 ];

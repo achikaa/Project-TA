@@ -1,4 +1,4 @@
-<nav class="navbar navbar-header navbar-expand-lg" data-background-color="blue2">
+<nav class="navbar navbar-header navbar-expand-lg" data-background-color="purple">
     <div class="container-fluid">
            <div class="collapse" id="search-nav">
             <form class="navbar-left navbar-form nav-search mr-md-3">
@@ -219,9 +219,13 @@
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#">My Profile</a>
                             <a class="dropdown-item" href="#">Go To Web Portal</a>
-                            <form action="{{ url('/logout') }}" method="POST">
-                                <button class="dropdown-item" type="submit">Logout</button>
-                            </form>
+                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                    onclick="event.preventDefault();
+                                    document.getElementById('logout-form').submit();">
+                              {{ __('Logout') }}</a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                @csrf
+                </form>
                         </li>
                     </div>
                 </ul>

@@ -37,12 +37,12 @@ class Controller extends BaseController
         return $data['data'];
     }
 
-    public function spec()
-    {
-        $response = Http::get('satria-apps.patria.co.id/satria-api-man/public/api/qfd-online-spec-qfd-list?po_interco=8440000190');
-        $data = json_decode($response, true);
-        return $data;
-    }
+    // public function spec()
+    // {
+    //     $response = Http::get('https://satria-apps.patria.co.id/satria-api-man/public/api/qfd-online-spec-qfd-list?po_interco=8440000190');
+    //     $data = json_decode($response, true);
+    //     return $data;
+    // }
 
     public static function ErrorLog($e)
     {

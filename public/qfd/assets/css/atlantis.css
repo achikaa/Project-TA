@@ -93,9 +93,9 @@ body {
   color: #575962; }
 
 a {
-  color: #1572E8; }
+  color: #254336; }
   a:hover, a:focus {
-    color: #1269DB; }
+    color: #254336; }
 
 h1,
 .h1 {
@@ -1447,6 +1447,18 @@ body {
 .navbar-header[data-background-color="red2"] {
   background: #EA4d56 !important; }
 
+.logo-header[data-background-color="darkgreen"] {
+  background: #254336 !important; }
+
+.logo-header[data-background-color="darkgreen2"] {
+  background: #254336 !important; }
+
+.navbar-header[data-background-color="darkgreen"] {
+  background: #254336 !important; }
+
+.navbar-header[data-background-color="darkgreen2"] {
+  background: #254336 !important; }
+
 .sidebar[data-background-color="dark"] {
   background: #1a2035 !important; }
   .sidebar[data-background-color="dark"] .user {
@@ -2295,7 +2307,7 @@ label {
       transition: all .3s; }
     .card-tasks .card-body .table td:hover .btn {
       opacity: 1; }
-.card-tasks .form-button-action {
+.card-tasks .form- -action {
   display: block !important; }
 
 /*     Card States    */
@@ -5004,14 +5016,14 @@ label.error {
   font-size: 1rem; }
 
 .selectgroup-input:checked + .selectgroup-button {
-  border-color: #1572E8;
+  border-color: #6861ce;
   z-index: 1;
-  color: #1572E8;
+  color: #6861ce;
   background: rgba(21, 114, 232, 0.15); }
 .selectgroup-input:focus + .selectgroup-button {
-  border-color: #1572E8;
+  border-color: #6861ce;
   z-index: 2;
-  color: #1572E8;
+  color: #6861ce;
   box-shadow: 0 0 0 2px rgba(21, 114, 232, 0.25); }
 
 .selectgroup-pills {

@@ -32,6 +32,7 @@ class PICproductController extends Controller
     {
         $pic = ManagementPicProduct::whereNull('flag')->get();
         $user = User::get();
+        // dd($user);
         $groupProducts = GroupProduct::select('group_product')->distinct('group_product')->get();
          // Ambil semua data Group Product
         return view('qfd/management-pic-product/index', compact('pic', 'groupProducts', 'user')); 
@@ -81,38 +82,20 @@ class PICproductController extends Controller
     }
     
     
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        try{
-            if($this->PermissionActionMenu('management-pic-product')->u = 1) {
-                $inisial_nama = ManagementPicProduct::where('id', $request->id)->update([
-                    'inisial_nama' => $request->inisial_nama,
-                    'updated_by' => Auth::user()->name,
-                ]);
-                if ($inisial_nama) {
-                    return redirect()->back()->with('success', 'Update!');
-                }else {
-                    return response()->json([
-                        'message' => 'location tidak ditemukan',
-                        'data' => null
-                    ], 404);
-                }
-            }else{
-                return response()->json([
-                    'message' => 'Akses Ditolak!',
-                    'data' => null
-                ], 404);
-                // return response()->with('err_message', 'Akses Ditolak!');
-            }
-        }catch (Exception $e){
-            $this->ErrorLog($e);
-            // return redirect()->back()->with('err_message', 'Error Request, Exception Error');
-            return response()->json([
-                'message' => 'Error Request',
-                'data' => null
-            ], 404);
+        $inisial_nama = ManagementPicProduct::where('id', $request->id)->update([
+            'inisial_nama' => $request->inisial_nama,
+            'updated_by' => Auth::user()->name,
+        ]);
+    
+        if ($inisial_nama) {
+            return redirect()->back()->with('success', 'Update!');
+        } else {
+            return redirect()->back()->with('fail', 'fail!');
         }
-    }
+}
+    
     
     public function destroy(Request $request)
     {

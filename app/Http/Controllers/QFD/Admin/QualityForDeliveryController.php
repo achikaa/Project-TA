@@ -39,7 +39,13 @@ class QualityForDeliveryController extends Controller
     {
         // $meeting = QualityForDelivery::where('flag', null)->get();
         // $meeting = QualityForDelivery::all();
-        $po_interco = Bapi::select('PONUM','PRODUCTDESC')->get();
+        $po_interco = Bapi::select('PONUM', 'PRODUCTDESC')
+        ->whereNotIn('PONUM', function($query) {
+            $query->select('po_interco')
+                ->from('trx_qfd');
+        })
+        ->get();
+
         $user = User::select('email','name')->get(); 
         $location = Http::withHeaders([
             'Authorization' => '44377|z2hXaICazxwpBhXTbHDdFqf64zRRRLDqJtqz6cSp',
@@ -53,11 +59,18 @@ class QualityForDeliveryController extends Controller
         
         //start card new
             //update 16-05-2024 perubahan multiple product
-            $new = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')
-            ->select('trx_qfd.no_qfd','detail_meeting_qfd.id','trx_qfd.customer','trx_qfd.end_customer','trx_qfd.projectName','detail_meeting_qfd.created_at','trx_qfd.po_interco','trx_qfd.reqDelivery', 'trx_qfd.product_no')
+            $new = QualityForDelivery::select('trx_qfd.no_qfd', 'detail_meeting_qfd.id', 'trx_qfd.customer', 'trx_qfd.end_customer', 'trx_qfd.projectName', 'detail_meeting_qfd.created_at', 'trx_qfd.po_interco', 'trx_qfd.reqDelivery', 'trx_qfd.product_no', 'trx_qfd.id')
+            ->join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')
             ->where('detail_meeting_qfd.meeting_ke', '1')
-            ->where('detail_meeting_qfd.updated_by', NULL)
-            // ->groupBy('trx_qfd.id')
+            ->whereNull('detail_meeting_qfd.updated_by')
+            ->whereIn('trx_qfd.id', function($query) {
+                $query->select(DB::raw('MAX(trx_qfd.id)'))
+                    ->from('trx_qfd')
+                    ->join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')
+                    ->where('detail_meeting_qfd.meeting_ke', '1')
+                    ->whereNull('detail_meeting_qfd.updated_by')
+                    ->groupBy('trx_qfd.po_interco');
+            })
             ->orderBy('detail_meeting_qfd.created_at', 'DESC')
             ->get();
             
@@ -70,10 +83,35 @@ class QualityForDeliveryController extends Controller
 
             $countnew = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')->where('detail_meeting_qfd.meeting_ke', '1')->where('detail_meeting_qfd.status', 'Open')->where('detail_meeting_qfd.updated_by', NULL)->count();
 
+            $countfinish = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')->where('detail_meeting_qfd.status', 'Close')->count();
+
+            $countongoing = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')
+            ->where(function($query) {
+                $query->where('detail_meeting_qfd.meeting_ke', 1)
+                ->where('detail_meeting_qfd.status', 'Open')
+                    ->whereNotNull('detail_meeting_qfd.updated_by');
+            })
+            ->orWhere(function($query) {
+                $query->where('detail_meeting_qfd.meeting_ke', '>', 1)
+                ->where('detail_meeting_qfd.status', 'Open');
+            })
+            ->count();
+
         // finish card new
-        
+        return view('qfd/quality-for-delivery/index', compact('po_interco','user','data','link_new','link_onGoing','link_finish','new','po','countnew', 'countfinish', 'countongoing'));
+
+    }
+    // sampe sini
+
+    public function ongoing(){
         // start card ongoing
+
+        $link_new = 'quality-for-delivery';
+        $link_onGoing = 'quality-for-delivery-ongoing';
+        $link_finish  = 'quality-for-delivery-finish';
             // update 16-05-2024 perubahan multiple product
+            $po_interco = Bapi::select('PONUM','PRODUCTDESC')->get();
+            $user = User::select('email','name')->get(); 
             $ongoing = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')
             ->select('trx_qfd.id','trx_qfd.po_interco','trx_qfd.no_qfd','trx_qfd.customer','trx_qfd.ProjectName','trx_qfd.reqDelivery','trx_qfd.end_customer','detail_meeting_qfd.meeting_ke','trx_qfd.product_no','trx_qfd.product_desc')
             ->where(function($query) {
@@ -86,7 +124,8 @@ class QualityForDeliveryController extends Controller
                         ->where('detail_meeting_qfd.status','Open')
                         ->whereNull('detail_meeting_qfd.updated_by');
             })
-            // ->groupBy('trx_qfd.no_qfd')
+            // ->groupBy('trx_qfd.id')
+            // ->groupBy('trx_qfd.id', 'trx_qfd.po_interco', 'trx_qfd.no_qfd', 'trx_qfd.customer', 'trx_qfd.ProjectName', 'trx_qfd.reqDelivery', 'trx_qfd.end_customer', 'detail_meeting_qfd.meeting_ke', 'trx_qfd.product_no', 'trx_qfd.product_desc')
             ->orderBy('detail_meeting_qfd.created_at', 'DESC')
             ->get();
 
@@ -101,9 +140,13 @@ class QualityForDeliveryController extends Controller
                 $query->where('detail_meeting_qfd.meeting_ke', '>', 1)
                     ->whereNull('detail_meeting_qfd.updated_by');
             })
-            // ->groupBy('qfd.id')
+            // ->groupBy('trx_qfd.id')
             ->get();
             // dd($noqfd );
+
+            $countnew = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')->where('detail_meeting_qfd.meeting_ke', '1')->where('detail_meeting_qfd.status', 'Open')->where('detail_meeting_qfd.updated_by', NULL)->count();
+
+            $countfinish = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')->where('detail_meeting_qfd.status', 'Close')->count();
 
             $countongoing = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')
             ->where(function($query) {
@@ -117,20 +160,43 @@ class QualityForDeliveryController extends Controller
             })
             ->count();
         //finish card ongoing
+        return view('qfd.quality-for-delivery.onGoing', compact('ongoing', 'noqfd', 'countongoing', 'po_interco', 'user','link_new','link_onGoing','link_finish','countnew', 'countfinish'));
 
+        // return view('qfd/quality-for-delivery/index', compact('po_interco','user','data','link_new','link_onGoing','link_finish','ongoing','noqfd', 'countongoing'));
+    }
+
+    public function finish(){
         //start card finish
+        $link_new = 'quality-for-delivery';
+        $link_onGoing = 'quality-for-delivery-ongoing';
+        $link_finish  = 'quality-for-delivery-finish';
             // update 16-05-2024 perubahan multiple product
             $finish = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')
             ->select('trx_qfd.po_interco','trx_qfd.no_qfd','trx_qfd.customer','trx_qfd.ProjectName','trx_qfd.reqDelivery','trx_qfd.end_customer','detail_meeting_qfd.meeting_ke','trx_qfd.product_no','trx_qfd.product_desc')
             ->where('detail_meeting_qfd.status', 'Close')
-            // ->groupBy('qfd.no_qfd')
+            // ->groupBy('trx_qfd.no_qfd')
             ->orderBy('detail_meeting_qfd.created_at', 'DESC')->get();
             $countfinish = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')->where('detail_meeting_qfd.status', 'Close')->count();
-        //end card finish
-        return view('qfd/quality-for-delivery/index', compact('po_interco','user','data','link_new','link_onGoing','link_finish','new','po','countnew','countongoing','countfinish'));
 
+            $countnew = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')->where('detail_meeting_qfd.meeting_ke', '1')->where('detail_meeting_qfd.status', 'Open')->where('detail_meeting_qfd.updated_by', NULL)->count();
+
+            $countongoing = QualityForDelivery::join('detail_meeting_qfd', 'trx_qfd.id', '=', 'detail_meeting_qfd.idQfd')
+            ->where(function($query) {
+                $query->where('detail_meeting_qfd.meeting_ke', 1)
+                ->where('detail_meeting_qfd.status', 'Open')
+                    ->whereNotNull('detail_meeting_qfd.updated_by');
+            })
+            ->orWhere(function($query) {
+                $query->where('detail_meeting_qfd.meeting_ke', '>', 1)
+                ->where('detail_meeting_qfd.status', 'Open');
+            })
+            ->count();
+
+            return view('qfd.quality-for-delivery.finish', compact('finish', 'countfinish','link_new','link_onGoing','link_finish', 'countnew', 'countongoing'));
+
+        //end card finish
     }
-    // sampe sini
+
     public function getCustomer(Request $request)
     {
         $po_interco = $request->input('po');
@@ -157,20 +223,6 @@ class QualityForDeliveryController extends Controller
             ])->get('https://satria-apps.patria.co.id/satria-api-man/public/api/ccr-group-product-list?productNumber='.$group_product);
         $data = $response->json();
         // dd($data['data'][0]['group_product']);
-           
-       
-         
-            // dd( $noInterco,$data);
-            
-            // ini di apus nanti kalo udh ganti api
-            // $groupProduct = collect($group_product)->filter(function ($item) use ($productNo) {
-                //     return $item['product_number'] === $productNo;
-                // });
-                // sampe sini
-                // return $data;
-                // dd($intercoParts, $noInterco, $group_product,$data);
-        // dd($data);
-        
 
         // $qty = $request->quantity;
         $qty = explode(' ', $request->quantity);
@@ -222,19 +274,21 @@ class QualityForDeliveryController extends Controller
         $id = $qfd->id;
         // dd($request->all());
         $MeetingDate = Carbon::createFromFormat('d/m/Y H:i',$request->date)->format('Y-m-d H:i:s');
-        $MeetingKe = DetailMeetingQFD::select('meeting_ke')->where('IdQfd', $id)->count();
-        // dd( $id,$MeetingDate,$MeetingKe);
+        // Hitung jumlah meeting_ke untuk idQfd tertentu
+        $MeetingKe = DetailMeetingQFD::where('idQfd', $id)->count();
+
+        // Buat entri baru dalam tabel DetailMeetingQFD
         $detailMeeting = DetailMeetingQFD::create([
-            'idQfd' => $id,
-            'MeetingOrganizer' =>$request->meetingorganizer,
-            'Location' =>$request->location,
-            'ReportedBy' =>$request->reportedBy,
-            'MeetingDate' =>$MeetingDate,
-            'meeting_ke' =>$MeetingKe == 0 ? 1 : $MeetingKe+1,
-            'status' => 'Open', // Masukkan bagian pertama dari po_interco
-           'created_by' => Auth::User()->name,
+        'idQfd' => $id,
+        'MeetingOrganizer' => $request->meetingorganizer,
+        'Location' => $request->location,
+        'ReportedBy' => $request->reportedBy,
+        'MeetingDate' => $MeetingDate,
+        'meeting_ke' => $MeetingKe + 1,
+        'status' => 'Open',
+        'created_by' => Auth::user()->name,
         ]);
-      
+
         $id_detail_meeting = $detailMeeting->id;
         for($i=0; $i < count($request->attendance); $i++){
             $attendance[] = [
@@ -262,9 +316,82 @@ class QualityForDeliveryController extends Controller
        
     }
     
-    public function detailProjectnew ($pname)
+    public function getMeetingCounts()
     {
-        $detail =  QualityForDelivery::join('detail_meeting_qfd', 'detail_meeting_qfd.idQfd', '=', 'trx_qfd.id')->select('detail_meeting_qfd.meeting_ke','detail_meeting_qfd.MeetingDate','detail_meeting_qfd.Location','detail_meeting_qfd.status')->get();
+        // Jalankan query SQL
+        $results = DB::select(DB::raw("
+        WITH labeled_meetings AS (
+            SELECT 
+                detail_meeting_qfd.meeting_ke, 
+                detail_meeting_qfd.MeetingDate, 
+                detail_meeting_qfd.Location, 
+                detail_meeting_qfd.status, 
+                detail_meeting_qfd.idQfd, 
+                trx_qfd.po_interco,
+                COUNT(*) AS count,
+                CASE 
+                    WHEN COUNT(*) = 1 THEN 'new'
+                    ELSE 'on going'
+                END AS label
+            FROM 
+                detail_meeting_qfd
+            JOIN 
+                trx_qfd 
+            ON 
+                detail_meeting_qfd.idQfd = trx_qfd.id
+            GROUP BY 
+                detail_meeting_qfd.meeting_ke,
+                detail_meeting_qfd.MeetingDate,
+                detail_meeting_qfd.Location,
+                detail_meeting_qfd.status,
+                detail_meeting_qfd.idQfd,
+                trx_qfd.po_interco
+        )
+        SELECT 
+            label,
+            COUNT(*) AS total
+        FROM 
+            labeled_meetings
+        GROUP BY 
+            label;
+    "));
+    
+
+        // Inisialisasi variabel untuk menghitung new dan on going
+        $countNew = 0;
+        $countOnGoing = 0;
+
+        // Iterasi hasil query dan set nilai variabel
+        foreach ($results as $result) {
+            if ($result->label == 'new') {
+                $countNew = $result->total;
+            } elseif ($result->label == 'on going') {
+                $countOnGoing = $result->total;
+            }
+        }
+
+        // Menghasilkan URL berdasarkan nama rute
+        $linkNewCard = route('new-meetings');
+        $linkOnGoingCard = route('ongoing-meetings');
+        $linkFinishCard = route('finish-meetings');
+
+        // Mengembalikan data dalam format JSON
+        return response()->json([
+            'countnew' => $countNew,
+            'countongoing' => $countOnGoing,
+            'link_new_card' => $linkNewCard,
+            'link_onGoing_card' => $linkOnGoingCard,
+            'link_finish_card' => $linkFinishCard
+        ]);
+    }
+
+
+    public function detailProjectnew ($id)
+    {
+        $detail = QualityForDelivery::join('detail_meeting_qfd', 'detail_meeting_qfd.idQfd', '=', 'trx_qfd.id')
+        ->select('detail_meeting_qfd.meeting_ke', 'detail_meeting_qfd.MeetingDate', 'detail_meeting_qfd.Location', 'detail_meeting_qfd.status', 'detail_meeting_qfd.idQfd', 'trx_qfd.po_interco')
+        ->where('trx_qfd.po_interco', $id) // Filter berdasarkan $id
+        ->get();
         return view('qfd/quality-for-delivery/detailMeeting',compact('detail'));
     }
 

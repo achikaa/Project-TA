@@ -63,7 +63,7 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="customer_desc">Customer<span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" placeholder="Customer" name="customer_deck" id="customer_desc" required>
+                                                    <input type="text" class="form-control" placeholder="Customer" name="customer_desc" id="customer_desc" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="alias">Alias<span class="text-danger">*</span></label>
@@ -121,7 +121,7 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="customer_desc">Customer<span class="text-danger">*</span></label>
-                                                    <input type="text" class="form-control" placeholder="Customer" name="customer_desc" id="customer_desc" >
+                                                    <input type="text" class="form-control" placeholder="Customer" name="customer_desc" id="customer_desc1" >
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="alias">Alias<span class="text-danger">*</span></label>
@@ -188,7 +188,7 @@
                     <div class="table-responsive">
                         <table id="basic" class="table table-striped table-bordered table-hover dataTable" role="grid" aria-describedby="add-row_info">
                             <thead class="table-light">
-                                <tr style="background-color: teal; color: white;" role="row">
+                                <tr style="background-color: #5A639C; color: white;" role="row">
                                     <th style="width:5%">No</th>
                                     <th style="width:25%">Customer Code</th>
                                     <th style="width:30%">Customer</th>
@@ -236,6 +236,11 @@
 
 @section('myscript')
 <script>
+
+$(document).ready(function() {
+    $('#basic').DataTable();      
+});
+
     $("#basic").on('click', '.edit', function() {
     var id = $(this).attr('data-id');
     $.ajax({
@@ -249,7 +254,7 @@
             console.log(data);
             $('#id').val(data.id);
             $('#customer_code1').val(data.customer_code);
-            $('#customer_desc').val(data.customer_desc);
+            $('#customer_desc1').val(data.customer_desc);
             $('#alias1').val(data.alias);
             $('#title1').val(data.title);
             $('#street1').val(data.street);

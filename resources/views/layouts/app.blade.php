@@ -12,6 +12,31 @@
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+    <!-- CSS Files -->
+	<link rel="stylesheet" href="{{asset('qfd/assets/css/bootstrap.min.css')}}">
+	<link rel="stylesheet" href="{{asset('qfd/assets/css/atlantis.min.css')}}">
+
+	<!-- CSS Just for demo purpose, don't include it in your project -->
+	<link rel="stylesheet" href="{{asset('qfd/assets/css/demo.css')}}">
+	<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+	{{-- <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}"> --}}
+	{{-- select2 --}}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+
+	{{-- flatpickr --}}
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+
+	<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+
+	<style>
+        .js-example-basic-multiple.form-control {
+            height: auto; /* Adjust height to fit content */
+            padding: 10px; /* Adjust padding for better appearance */
+            border-radius: 4px; /* Ensure consistent border radius */
+        }
+    </style>
 
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
@@ -56,14 +81,12 @@
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
+                                        onclick="event.preventDefault();
+                                        document.getElementById('logout-form').submit();">
+                                  {{ __('Logout') }}</a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    @csrf
+                    </form>
                                 </div>
                             </li>
                         @endguest

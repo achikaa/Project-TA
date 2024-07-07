@@ -1,168 +1,303 @@
 @extends('qfd.layouts.master')
 @section('content')
-<!DOCTYPE html>
-<html>
-<head>
-    <div class="page-inner">
-        <div class="page-header">
-            <h4 class="page-title">Dashboard</h4>
-        </div>
+<style>
+    .adjusted-td {
+        width: 200px; /* Atur lebar sesuai dengan kebutuhan Anda */
+        padding: 10px; /* Sesuaikan padding jika diperlukan */
+        border: 1px solid #ddd; /* Tambahkan border jika diperlukan */
+        background-color: #f9f9f9; /* Ubah warna latar belakang jika diperlukan */
+        overflow-y: auto; /* Tambahkan scrollbar vertikal jika konten terlalu banyak */
+        max-height: 200px; /* Atur tinggi maksimum jika diperlukan */
+    }
+</style>
+<div class="page-inner">
+    <div class="page-header">
     </div>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-            text-align: center;
-        }
-        td {
-            text-align: center;
-        }
-        .bg-red { background-color: #f8d7da; }
-        .bg-blue { background-color: #cce5ff; }
-        .bg-purple { background-color: #d1c4e9; }
-        .card {
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Schedule</h4>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Gantt Activity</h4>
+                </div>
             </div>
-            <div class="card-body">
-                <button>Filter</button>
-                <table>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+                <!DOCTYPE html>
+                <html>
+                <head>
+                {{-- bootstrap 5 --}}
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css">
+                </head>
+                <body>
+                <div class="col-12 p-5 table-responsive">
+                {{-- Filter Form --}}
+                <form method="GET" action="{{ route('dashboard') }}" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <select class="form-control" name="month" id="month">
+                                @for ($m = 1; $m <= 12; $m++)
+                                    <option value="{{ $m }}" {{ $m == $selectedMonth ? 'selected' : '' }}>
+                                        {{ date('F', mktime(0, 0, 0, $m, 1)) }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" name="year" id="year">
+                                @for ($y = date('Y'); $y >= date('Y') - 10; $y--)
+                                    <option value="{{ $y }}" {{ $y == $selectedYear ? 'selected' : '' }}>
+                                        {{ $y }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                        </div>
+                    </div>
+                </form>
+
+                <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th colspan="2">Monitoring QFD</th>
-                            <th colspan="21                                                                                                                                                                                                                                                                                                                                         ">MONTH</th>
-                        </tr>
-                        <tr>
+                            <th>Detail Produk</th>
                             <th>Proses</th>
-                            <th>Details</th>
-                            <?php
-                                $currentMonth = date('n'); // Current month as a number (1-12)
-                                $currentYear = date('Y'); // Current year as a 4-digit number
-                                $daysInMonth = date('t'); // Total days in the current month
+                            <th>Sub Proses</th>
+                            <?php 
+                                $bulan = request()->get('month', date('n'));
+                                $tahun = request()->get('year', date('Y'));
 
-                                // Get the remaining days in the current month
-                                for ($i = date('j'); $i <= $daysInMonth; $i++) {
-                                    echo "<th>{$i}</th>";
-                                }
-                                // Get the first 9 days of the next month
-                                for ($i = 1; $i <= 9; $i++) {
-                                    echo "<th>{$i}</th>";
+                                // jumlah tanggal bulan yang dipilih
+                                $jumlah_tanggal = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
+                                $array_is_minggu = array();
+
+                                for ($i=1; $i <= $jumlah_tanggal; $i++) { 
+                                    echo "<th>$i</th>";
+                                    $array_is_minggu[] = date('N', strtotime($tahun.'-'.$bulan.'-'.$i));
                                 }
                             ?>
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- ini buat ambil data di tabel --}}
-                        @foreach ($data as $item)
-                            <tr>
-                                <td>{{ $item['id'] }}</td>
-                                <td>
-                                    {{-- Product : {{ $item['PRODUCT'] }}<br> --}}
-                                    {{-- Product Desc : {{ $item['end_customer'] }} <br> --}}
-                                    Start Date : {{ $item['start_date'] }}<br>
-                                    DueDate : {{ $item['end_date'] }}<br>
+                        {{-- INI HARUSNYA DI LOOP (DIMASUKKAN) DALAM PRODUK DETAIL --}}
+                        <tr>
+                            <td rowspan="12" style="  width: auto; white-space: nowrap; ">  
+                                <?php 
+                                // Ambil data pertama dari tabel quality_for_delivery
+                                $detail = \App\Models\QFD\QualityForDelivery::first();
+                                ?>
+                                
+                                <div>
+                                    Customer   : <?php echo htmlspecialchars($detail->customer); ?> <br>
+                                    PO Interco : <?php echo htmlspecialchars($detail->po_interco); ?> <br>
+                                    Product     : <?php echo htmlspecialchars($detail->product_desc); ?> <br>
+                                    Request Delivery : <?php echo htmlspecialchars($detail->reqDelivery); ?> <br>
+                                    QTY        : <?php echo htmlspecialchars($detail->qty ); ?> <br>
+                                </div>
                                 </td>
-                                @for ($i = date('j'); $i <= $daysInMonth; $i++)
-                                    <td class="{{ in_array($i, [23, 24, 29]) ? 'bg-red' : (in_array($i, [25]) ? 'bg-blue' : '') }}"></td>
-                                @endfor
-                                @for ($i = 1; $i <= 9; $i++)
-                                    <td class="{{ in_array($i, [3, 6, 7, 8, 9]) ? 'bg-red' : (in_array($i, [4, 5]) ? 'bg-blue' : '') }}"></td>
-                                @endfor
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    {{-- SN : {{ $item['sn'] }}<br>
-                                    Cust : {{ $item['customer'] }}<br>
-                                    SO : {{ $item['so'] }} --}}
-                                </td>
-                                @for ($i = date('j'); $i <= $daysInMonth; $i++)
-                                    <td class="{{ $i == 15 ? 'bg-purple' : ($i == 16 ? 'bg-purple' : '') }}">
-                                        {{ $i == 15 ? 'P' : ($i == 16 ? 'A' : '') }}
-                                    </td>
-                                @endfor
-                                @for ($i = 1; $i <= 9; $i++)
-                                    <td></td>
-                                @endfor
-                            </tr>
-                        @endforeach
+                            <td>Schedule Incoming</td>
+                            <td class="adjusted-td">
+                                <?php 
+                                // Ambil semua data dari tabel detail_schedule
+                                $detailScheduleLine = \App\Models\QFD\DetailScheduleLine::whereMonth('incoming_date', $bulan)
+                                    ->whereYear('incoming_date', $tahun)
+                                    ->get();
+                                
+                                // Loop melalui semua data dan tampilkan nama_proses
+                                foreach ($detailScheduleLine as $proses) {
+                                    echo htmlspecialchars($proses->nama_proses) .'<br>';
+                                }
+                                ?>
+                            </td>
+                            <?php 
+                                $detailScheduleLines = \App\Models\QFD\DetailScheduleLine::where('id_detail_meeting', 1)
+                                    ->whereMonth('incoming_date', $bulan)
+                                    ->whereYear('incoming_date', $tahun)
+                                    ->first();
+                                if ($detailScheduleLines) {
+                                    $incoming_date = $detailScheduleLines->incoming_date;
+                                    // ambil tanggal saja dan hilangkan 0 di depan angka
+                                    $incoming_date = ltrim(date('d', strtotime($incoming_date)), '0');
+                                    $end_date = $detailScheduleLines->end_date;
+                                    // ambil tanggal saja dan hilangkan 0 di depan angka
+                                    $end_date = ltrim(date('d', strtotime($end_date)), '0');
+                                    $day = 1;
+                                    for ($i=1; $i <= $jumlah_tanggal; $i++) { 
+                                        if ($i >= $incoming_date && $i <= $end_date) {
+                                            // jika hari minggu maka warna merah
+                                            if ($array_is_minggu[$i-1] == 7) {
+                                                echo "<td data-id='{$proses->id}' data-bs-toggle='tooltip' data-bs-html='true' title='Loading...' style='background-color: #51829B; cursor: pointer;'></td>";
+                                            } else {
+                                                echo "<td data-id='{$proses->id}' data-bs-toggle='tooltip' data-bs-html='true' title='Loading...' style='background-color: #51829B; cursor: pointer;'></td>";
+                                            }
+                                            $day++;
+                                        } else {
+                                            if ($array_is_minggu[$i-1] == 7) {
+                                                echo "<td style='background-color: #ff0000'></td>";
+                                            } else {
+                                                echo "<td></td>";
+                                            }
+                                        }
+                                    }
+                                }
+                            ?>
+                        </tr>
+                        <tr>
+                            <td>Schedule Line Production</td>
+                            <td class="adjusted-td">
+                                <?php 
+                                // Ambil semua data dari tabel detail_schedule_pb_finish
+                                $detailScheduleLineProduct= \App\Models\QFD\DetailScheduleLineProduksi::whereMonth('start_date', $bulan)
+                                    ->whereYear('start_date', $tahun)
+                                    ->get();
+                                
+                                // Loop melalui semua data dan tampilkan nama_proses
+                                foreach ($detailScheduleLineProduct as $proses) {
+                                    echo htmlspecialchars($proses->nama_proses) . '<br>'; 
+                                }
+                                ?>
+                            </td>
+                            <?php 
+                                $detailScheduleLineProduksis = \App\Models\QFD\DetailScheduleLineProduksi::where('id_detail_meeting', 3)
+                                    ->whereMonth('start_date', $bulan)
+                                    ->whereYear('start_date', $tahun)
+                                    ->first();
+                                if ($detailScheduleLineProduksis) {
+                                    $start_date = $detailScheduleLineProduksis->start_date;
+                                    // ambil tanggal saja dan hilangkan 0 di depan angka
+                                    $start_date = ltrim(date('d', strtotime($start_date)), '0');
+                                    $end_date = $detailScheduleLineProduksis->finish_date;
+                                    // ambil tanggal saja dan hilangkan 0 di depan angka
+                                    $end_date = ltrim(date('d', strtotime($end_date)), '0');
+                                    $day = 1;
+                                    for ($i=1; $i <= $jumlah_tanggal; $i++) { 
+                                        if ($i >= $start_date && $i <= $end_date) {
+                                            // jika hari minggu maka warna merah
+                                            if ($array_is_minggu[$i-1] == 7) {
+                                                echo "<td data-id='{$proses->id}' data-bs-toggle='tooltip' data-bs-html='true' title='Loading...' style='background-color: #51829B; cursor: pointer;'></td>";
+                                            } else {
+                                                echo "<td data-id='{$proses->id}' data-bs-toggle='tooltip' data-bs-html='true' title='Loading...' style='background-color: #51829B; cursor: pointer;'></td>";
+                                            }
+                                            $day++;
+                                        } else {
+                                            if ($array_is_minggu[$i-1] == 7) {
+                                                echo "<td style='background-color: #ff0000'></td>";
+                                            } else {
+                                                echo "<td></td>";
+                                            }
+                                        }
+                                    }
+                                }
+                            ?>
+                        </tr>
+                        <tr>
+                            <td>Schedule PB Finish</td>
+                            <td class="adjusted-td">
+                                <?php 
+                                // Ambil semua data dari tabel detail_schedule_pb_finish
+                                $detailProsesPbFinishes = \App\Models\QFD\DetailSchedulePbFinish::whereMonth('start_date', $bulan)
+                                    ->whereYear('start_date', $tahun)
+                                    ->get();
+                                
+                                // Loop melalui semua data dan tampilkan nama_proses
+                                foreach ($detailProsesPbFinishes as $proses) {
+                                    echo htmlspecialchars($proses->nama_proses) . '<br>';
+                                }
+                                ?>
+                            </td>
+                            
+                            <?php 
+                                $detailSchedulePbFinishes = \App\Models\QFD\DetailSchedulePbFinish::where('id_detail_meeting', 1)
+                                    ->whereMonth('start_date', $bulan)
+                                    ->whereYear('start_date', $tahun)
+                                    ->first();
+                                if ($detailSchedulePbFinishes) {
+                                    $start_date = $detailSchedulePbFinishes->start_date;
+                                    // ambil tanggal saja dan hilangkan 0 di depan angka
+                                    $start_date = ltrim(date('d', strtotime($start_date)), '0');
+                                    $end_date = $detailSchedulePbFinishes->finish_date;
+                                    // ambil tanggal saja dan hilangkan 0 di depan angka
+                                    $end_date = ltrim(date('d', strtotime($end_date)), '0');
+                                    $day = 1;
+                                    for ($i=1; $i <= $jumlah_tanggal; $i++) { 
+                                        if ($i >= $start_date && $i <= $end_date) {
+                                            // jika hari minggu maka warna merah
+                                            if ($array_is_minggu[$i-1] == 7) {
+                                                echo "<td data-id='{$proses->id}' data-bs-toggle='tooltip' data-bs-html='true' title='Loading...' style='background-color: #51829B; cursor: pointer;'></td>";
+                                            } else {
+                                                echo "<td data-id='{$proses->id}' data-bs-toggle='tooltip' data-bs-html='true' title='Loading...' style='background-color: #51829B; cursor: pointer;'></td>";
+                                            }
+                                            $day++;
+                                        } else {
+                                            if ($array_is_minggu[$i-1] == 7) {
+                                                echo "<td style='background-color: #ff0000'></td>";
+                                            } else {
+                                                echo "<td></td>";
+                                            }
+                                        }
+                                    }
+                                }
+                            ?>
+                        </tr>
+                        {{-- BATASNYA --}}
                     </tbody>
                 </table>
+                </div>
+
+                {{-- jquery --}}
+                <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+                {{-- bootstrap 5 --}}
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+                {{-- Script untuk handle klik dan tampilkan tooltip --}}
+                <script>
+                    $(document).ready(function(){
+                        var tooltipElements = $('[data-bs-toggle="tooltip"]');
+                        tooltipElements.each(function() {
+                            var id = $(this).data('id');
+                            var element = $(this);
+                            // Panggil AJAX untuk mendapatkan detail
+                            $.ajax({
+                                url: '/getDetail/' + id,
+                                type: 'GET',
+                                success: function(data){
+                                    element.attr('title', data).tooltip('dispose').tooltip(); // Update tooltip content
+                                },
+                                error: function(xhr, status, error){
+                                    console.error(xhr.responseText);
+                                }
+                            });
+                        });
+
+                        tooltipElements.tooltip();
+                    });
+                </script>
+                <script>
+                    $(document).ready(function(){
+                        var tooltipElements = $('[data-bs-toggle="tooltip"]');
+                        tooltipElements.each(function() {
+                            var id = $(this).data('id');
+                            var element = $(this);
+                            // Panggil AJAX untuk mendapatkan detail
+                            $.ajax({
+                                url: '/getDetail/' + id,
+                                type: 'GET',
+                                success: function(data){
+                                    element.attr('title', data).tooltip('dispose').tooltip(); // Update tooltip content
+                                },
+                                error: function(xhr, status, error){
+                                    console.error(xhr.responseText);
+                                }
+                            });
+                        });
+                
+                        tooltipElements.tooltip();
+                    });
+                </script>
+                </body>
+                </html>
             </div>
         </div>
     </div>
-
-    {{-- PIE --}}
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">Persentase</h4>
-                </div>
-                <div class="card-body">
-                    <div id="pieChartContainer">
-                        <canvas id="pieChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-
-<!-- Include Chart.js library -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    var pieChart = document.getElementById('pieChart').getContext('2d');
-    var myPieChart = new Chart(pieChart, {
-        type: 'pie',
-        data: {
-            datasets: [{
-                data: [50, 50],
-                backgroundColor: ["#1d7af3", "#f3545d"],
-                borderWidth: 0
-            }],
-            labels: ['Done', 'On Going']
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            legend: {
-                position: 'bottom',
-                labels: {
-                    fontColor: 'rgb(154, 154)',
-                    fontSize: 11,
-                    usePointStyle: true,
-                    padding: 20
-                }
-            },
-            pieceLabel: {
-                render: 'percentage',
-                fontColor: 'white',
-                fontSize: 14,
-            },
-            tooltips: false,
-            layout: {
-                padding: {
-                    left: 20,
-                    right: 20,
-                    top: 20,
-                    bottom: 20
-                }
-            }
-        }
-    })
-</script>
+</div>
 @endsection

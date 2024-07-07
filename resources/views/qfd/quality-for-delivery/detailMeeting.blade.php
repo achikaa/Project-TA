@@ -1,5 +1,4 @@
 @extends('qfd.layouts.master')
-
 @section('content')
     <div class="page-inner">
         <div class="page-header">
@@ -44,280 +43,41 @@
                     @endif
                     <div class="card-body">
                         <div class="dt-layout-row">
-                            <div class="dt-layout-cell dt-start ">
-                                <div class="dt-length"><select name="new_datatables_length" aria-controls="new_datatables"
-                                        class="dt-input" id="dt-length-0">
-                                        <option value="10">10</option>
-                                        <option value="25">25</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select><label for="dt-length-0"> entries per page</label></div>
-                            </div>
-                            <div class="dt-layout-cell dt-end ">
-                                <div class="dt-search"><label for="dt-search-0">Search:</label><input type="search"
-                                        class="dt-input" id="dt-search-0" placeholder="" aria-controls="new_datatables">
-                                </div>
-                            </div>
                         </div>
-                        <!-- Add Modal -->
-                        <div class="modal fade" id="addRowModal" role="dialog" aria-hidden="true">
-                            <div class="modal-dialog modal-lg" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header no-bd">
-                                        <h5 class="modal-title">
-                                            <b>New Meeting</b>
-                                        </h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-                                    </div>
-                                    <form action="{{ url('qfd-store') }}" method="post">
-                                        @csrf
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="po_interco">PO Interco<span
-                                                                class="text-danger">*</span></label>
-                                                        <select class="form-control" role="listbox" name="po_interco"
-                                                            id="po_interco" onchange="getCustomer()">
-                                                            {{-- @foreach ($po_interco as $item)
-                                                        <option value="{{$item->PONUM}},{{$item->PRODUCTDESC}}">{{ $item->PONUM }} |{{$item->PRODUCTDESC}}</option>
-                                                        @endforeach --}}
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="customer">Customer<span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" readonly=""
-                                                            placeholder="Customer" name="customer" id="customer">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="customerpo">Customer PO<span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" readonly=""
-                                                            placeholder="Customer PO" name="customerpo" id="customerpo">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="projectName">Project Name<span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control"
-                                                            placeholder="Project Name" name="projectName" id="projectName">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="quantity">Quantity<span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" readonly=""
-                                                            placeholder="Quantity" name="quantity" id="quantity">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="attendance">Attendance<span
-                                                                class="text-danger">*</span></label>
-                                                        <select class="form-control select2-multiple" name="attendance[]"
-                                                            id="attendance" multiple="multiple">
-                                                            {{-- @foreach ($user as $user)
-                                                        <option value="{{ $user->name }}">{{ $user->name }}</option>
-                                                        @endforeach --}}
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <label for="meetingOrganizer">Meeting Organizer<span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" readonly=""
-                                                            placeholder="Meeting Organizer" aria-label="Username"
-                                                            aria-describedby="basic-addon1" name="meetingorganizer"
-                                                            value="{{ Auth::user()->name }}">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="location">Location<span
-                                                                class="text-danger">*</span></label>
-                                                        <select class="form-control" name="location" id="location">
-                                                            <option value="">select an option</option>
-                                                            {{-- @foreach ($data['data'] as $loc)
-                                                        <option value="{{$loc['nama']}}">{{ $loc['nama']}}</option>
-                                                        @endforeach --}}
-                                                        </select>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="reportedBy">Reported By<span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control"
-                                                            placeholder="Reported By" aria-label="Username"
-                                                            aria-describedby="basic-addon1" name="reportedBy"
-                                                            value="{{ Auth::user()->name }}">
-                                                        {{-- <input type="text" class="form-control" placeholder="Reported By" name="reportedBy" id="reportedBy"> --}}
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="date">Date<span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control datetimepicker"
-                                                            placeholder="Date" name="date" id="date">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="reqDelivery">Request Delivery<span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="date" class="form-control"
-                                                            placeholder="Request Delivery" name="reqDelivery"
-                                                            id="reqDelivery">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="speaker">Speaker<span
-                                                                class="text-danger">*</span></label>
-                                                        <select class="form-control select2-multiple" name="speaker[]"
-                                                            id="speaker" multiple="multiple">
-                                                        </select>
-                                                    </div>
-                                                    <input type="hidden" name="prodnum" id="prodnum" value="">
-                                                    <input type="hidden" name="proddesk" id="proddesk" value="">
-                                                    <input type="hidden" name="prodgroup" id="prodgroup"
-                                                        value="">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer no-bd">
-                                            <button type="submit" class="btn btn-primary">Add</button>
-                                            {{-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> --}}
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                       
 
-                        <!-- Edit Modal -->
-                        <div class="modal fade" id="editRowModal" role="dialog" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header no-bd">
-                                        <h5 class="modal-title">
-                                            <b>Edit Meeting</b>
-                                        </h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-                                    </div>
-                                    <form action="{{ url('/qfd-update') }}" method="post">
-                                        @csrf4
-                                        <div class="modal-body">
-                                            <input type="hidden" name="id" id="id">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <label for="password">qfd :</label>
-                                                        <input type="text" class="form-control" placeholder="qfd"
-                                                            name="qfd" id="qfd-edit">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer no-bd">
-                                            <button type="submit" class="btn btn-primary btn-sm">Edit</button>
-                                            {{-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> --}}
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Delete Modal -->
-                        <div class="modal fade" id="deleteRowModal" role="dialog" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header no-bd">
-                                        <h5 class="modal-title">
-                                            <b>Delete Meeting</b>
-                                        </h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">×</span>
-                                        </button>
-                                    </div>
-                                    <form action="{{ url('/qfd-delete') }}" method="post">
-                                        @csrf
-                                        <div class="modal-body">
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <input hidden type="text" name="id" id="delete_id">
-                                                    Yakin ingin menghapus data qfd ?
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer no-bd">
-                                            <button type="submit" class="btn btn-primary btn-sm">Delete</button>
-                                            {{-- <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button> --}}
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                         <div class="table-responsive">
                             <table id="basic" class="table table table-striped table-bordered table-hover dataTable" role="grid" aria-describedby="add-row_info">
                                 <thead class="table-light">
-                                    <tr style="background-color: teal; color: white;" role="row">
-                                        <th style="width:10%">QFD</th>
+                                    <tr style="background-color: #5A639C; color: white;" role="row">
+                                        <th style="width:10%">Meeting ke</th>
                                         <th style="width:25%">Meeting Date</th>
                                         <th style="width:25%">Location</th>
                                         <th style="width:10%">Status</th>
+                                        <th style="width:10%">PO</th>
                                         <th style="width:10%" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                   
-                                    <?php $i = 0; ?>
-                                     
+                                    <?php $i = 1; ?>
                                     @foreach($detail as $value) 
-                                            <tr role="row" class="odd">
-                                             <td>{{ $value->meeting_ke }}</td>
-                                             <td>{{ $value->MeetingDate }}</td>
-                                             <td>{{ $value->Location }}</td>
-                                             <td>{{ $value->status }}</td>
-                                             <td>
-                                                <a href="/create-notulensi" type="button" data-toggle="tooltip" title="Create Notulensi" class="btn btn-link btn-danger btn-lg" data-original-title="Create Notulensi" data-id="{{ $value->id }}">
+                                        <tr role="row" class="odd">
+                                            <td>{{ $i }}</td>
+                                            <td>{{ $value->MeetingDate }}</td>
+                                            <td>{{ $value->Location }}</td>
+                                            <td>{{ $value->status }}</td>
+                                            <td>{{ $value->po_interco }}</td>
+                                            <td>
+                                                <a href="{{url('/create-notulensi/'.$value->po_interco)}}" type="button" data-toggle="tooltip" title="Create Notulensi" class="btn btn-link btn-danger btn-lg" data-original-title="Create Notulensi" data-id="{{ $value->id}}">
                                                     <i class="fa fa-plus"></i>
                                                 </a>
-                                                {{-- <div class="form-button-action">
-                                                    <a href="#" type="button" data-toggle="tooltip" title="Edit" class="btn btn-link btn-primary btn-lg edit" data-original-title="Edit" data-id="{{ $value->id }}"> 
-                                                        <i class="fa fa-edit"></i>
-                                                    </a>
-                                                </div> --}}
-                                             </td>
-                                    </tr>
+                                            </td>
+                                        </tr>
+                                        <?php $i++; ?>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
-                        {{-- <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>No QFD</th>
-                                    <td>{{ $detailMeeting->no_qfd }}</td>
-                                </tr>
-                                <tr>
-                                    <th>PO Interco</th>
-                                    <td>{{ $detailMeeting->po_interco }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Product No</th>
-                                    <td>{{ $detailMeeting->product_no }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Project Name</th>
-                                    <td>{{ $detailMeeting->projectName }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Customer</th>
-                                    <td>{{ $detailMeeting->customer }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Request Delivery</th>
-                                    <td>{{ $detailMeeting->reqDelivery }}</td>
-                                </tr>
-                                <tr>
-                                    <th>End Customer</th>
-                                    <td>{{ $detailMeeting->end_customer }}</td>
-                                </tr>
-                            </table>
-                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -326,6 +86,10 @@
 @endsection
 @section('myscript')
     <script>
+        $(document).ready(function() {
+            $('#basic').DataTable();      
+        });
+
         $("#basic").on('click', '.edit', function() {
             var id = $(this).attr('data-id');
             $.ajax({

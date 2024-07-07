@@ -154,11 +154,11 @@
                        
                         <table id="basic" class="table table table-striped table-bordered table-hover dataTable" role="grid" aria-describedby="add-row_info">
                             <thead class="table-light">
-                                <tr style="background-color: teal; color: white;" role="row">
+                                <tr style="background-color: #5A639C; color: white;" role="row">
                                     <th style="width:5%">No</th>
-                                    <th style="width:80%" class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Truck</th>
+                                    <th style="width:80%">Truck</th>
                                     {{-- <th style="width:80%" class="sorting_asc" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending">Status</th> --}}
-                                    <th style="width:15%" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending">Action</th>
+                                    <th style="width:15%">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -170,7 +170,7 @@
                                     <td style="width:5%"> <?php $i++; ?>
                                         <?php echo $i; ?>
                                     </td>
-                                    <td style="width:80%" class="sorting_1">{{$value->truck}}</td>
+                                    <td style="width:80%" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending">{{$value->truck}}</td>
                                     <td style="width:15%">
                                         <div class="form-button-action">
                                             <a href="#" type="button" data-toggle="tooltip" title="Edit" class="btn btn-link btn-primary btn-lg edit" data-original-title="Edit" data-id="{{ $value->id }}"> 
@@ -195,6 +195,10 @@
 @endsection
 @section('myscript')
 <script>
+$(document).ready(function() {
+    $('#basic').DataTable();      
+});
+
     $("#basic").on('click', '.edit', function(){
         var id = $(this).attr('data-id');
         $.ajax({
@@ -231,7 +235,5 @@
             }
         });
     });
-
-
 </script>
 @endsection

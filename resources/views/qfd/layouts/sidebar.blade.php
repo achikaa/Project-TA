@@ -2,6 +2,58 @@
     <div class="sidebar-wrapper scrollbar scrollbar-inner">
         <div class="sidebar-content">
             <ul class="nav nav-primary">
+                <li class="nav-item active">
+                    <a href="{{url('/qfd-dashboard')}}">
+                        <i class="fas fa-home"></i>
+                        <p>Dashboard</p>
+                    </a>
+                </li>
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                </li>
+                <li class="nav-item">
+                    <a href="{{url('/quality-for-delivery')}}">
+                        <i class="fas fa-th-list"></i>
+                        <p>Quality For Delivery</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a data-toggle="collapse" href="#base" class="collapsed" aria-expanded="false">
+                        <i class="fas fa-layer-group"></i>
+                        <p>Master Data</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse" id="base" style="">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{url('/management-end-customer')}}">
+                                    <span class="sub-item">Management End Customer</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{url('/management-pic-product')}}">
+                                    <span class="sub-item">Management PIC Product</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{url('/management-truck')}}">
+                                    <span class="sub-item">Management Truck</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+        {{-- <div class="sidebar-content"> --}}
+            {{-- <ul class="nav nav-primary">
                 @foreach ($data['listmenu'] as $i => $rows)
                     @if ($rows['main'] != null || $rows['main'] != '')
                         <li class="nav-item">
@@ -32,7 +84,7 @@
                             </li>
                         @endforeach
                     @endif
-                @endforeach
+                @endforeach --}}
                 {{-- <li class="nav-item active">
                     <a  href="#dashboard" aria-expanded="false">
                         <i class="fas fa-home"></i>

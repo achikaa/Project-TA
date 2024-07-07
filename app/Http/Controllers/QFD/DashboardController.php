@@ -40,4 +40,6 @@ class DashboardController extends Controller
             return redirect()->back()->with('err_message', 'Error Request, Exception Error ');
         }
     }
+
+    
 }

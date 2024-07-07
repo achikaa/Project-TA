@@ -38,7 +38,7 @@ class ManagementEndCustomerController extends Controller
 
     public function store(Request $request)
     {
-        if ($customers = ManagementEndCustomer::create($request->all())){
+        if ($customer = ManagementEndCustomer::create($request->all())){
             return redirect()->back()->with('success','Added!');
         }
     }
@@ -48,6 +48,7 @@ class ManagementEndCustomerController extends Controller
         $id = $request->id;
         $customer = ManagementEndCustomer::findOrFail($id);
         $customer->update($request->all());
+        
         return json_encode($customer);
     }
 
@@ -65,6 +66,7 @@ class ManagementEndCustomerController extends Controller
             'postal_code' => $request->postal_code,
             'updated_by'=> Auth::user()->name,
             ]);
+            
             // dd($request->all());
             Log::info('Request Data: ', $request->all());
             if ($customer){

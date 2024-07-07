@@ -7,10 +7,10 @@
 	@include('qfd.layouts.css')
 </head>
 <body>
-	<div class="wrapper">
+	{{-- <div class="wrapper"> --}}
 		<div class="main-header">
 			<!-- Logo Header -->
-			<div class="logo-header" data-background-color="blue">
+			<div class="logo-header" data-background-color="purple">
 				
 				<a href="index.html" class="logo">
 					<img src="https://satria-apps.patria.co.id/satria-qfd/public/qfd/assets/img/logo_putih.png" style="width: 130px;" alt="navbar brand" class="navbar-brand">
@@ -28,9 +28,11 @@
 				</div>
 			</div>
 			<!-- End Logo Header -->
+			
 			<!-- Navbar Header -->
 			@include('qfd.layouts.navbar')
 			<!-- End Navbar -->
+			
 		</div>
 
 		<!-- Sidebar -->
@@ -41,7 +43,7 @@
 			<div class="content">
 				@yield('content')
 			</div>
-			@include('qfd.layouts.footer')
+			@include('qfd.layouts.footer') 
 		</div>
 		
 		<!-- Custom template | don't include it in your project! -->
@@ -115,7 +117,7 @@
 			</div>
 		</div> --}}
 		<!-- End Custom template -->
-	</div>
+	{{-- </div> --}}
 	@include('qfd.layouts.script')
 	@yield('myscript')
 </body>

@@ -1,5 +1,4 @@
 @extends('qfd.layouts.master')
-
 @section('content')
 <div class="page-inner">
     <div class="page-header">
@@ -64,8 +63,9 @@
                                                 <div class="form-group">
                                                     <label for="pic">PIC<span class="text-danger">*</span></label>
                                                     <select class="form-control" name="name" id="name" onchange="getEmail()">
-                                                        @foreach($user as $user)
-                                                        <option value="{{ $user->name }}">{{ $user->name }}</option>
+                                                        <option value="">select an option</option>
+                                                        @foreach($user as $item)
+                                                        <option value="{{ $item->name }}">{{ $item->name }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -81,6 +81,7 @@
                                                 <div class="form-group">
                                                     <label for="gproduct">Group Product<span class="text-danger">*</span></label>
                                                     <select class="form-control" name="gproduct" id="gproduct" required>
+                                                        <option value="">select an option</option>
                                                         @foreach($groupProducts as $gp)
                                                         <option value="{{$gp->group_product}}">{{ $gp->group_product }}</option>
                                                         @endforeach
@@ -115,17 +116,13 @@
                                         <input  type="hidden" name="id" id="id" >
                                         <div class="row" >
                                             <div class="col-md-12">
-                                                {{-- <div class="form-group">
-                                                    <label for="pic">PIC<span class="text-danger">*</span></label>
-                                                    <select class="form-control" name="name" id="name1" onchange="getEmail()">
-                                                        @foreach($user as $u)
-                                                            <option value="{{ $u->name }}" data-email="{{ $u->email }}">{{ $u->name }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div> --}}
                                                 <div class="form-group">
                                                     <label for="pic">PIC<span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" placeholder="PIC" name="name" id="name1">
+                                                    <select class="form-control" name="name" id="name1" onchange="getEmail()">
+                                                        @foreach($user as $item)
+                                                            <option value="{{ $item->name }}">{{ $item->name }}</option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="email">Email<span class="text-danger">*</span></label>
@@ -135,18 +132,18 @@
                                                     <label for="initial">Initial PIC<span class="text-danger">*</span></label>
                                                     <input type="text" class="form-control" placeholder="Initial PIC" name="inisial_nama" id="initial1">
                                                 </div>
-                                                {{-- <div class="form-group">
+                                                <div class="form-group">
                                                     <label for="gproduct">Group Product<span class="text-danger">*</span></label>
                                                     <select class="form-control" name="gproduct" id="gproduct" required>
                                                         @foreach($groupProducts as $gp)
                                                         <option value="{{$gp->group_product}}">{{ $gp->group_product }}</option>
                                                         @endforeach
                                                     </select>
-                                                </div> --}}
-                                                <div class="form-group">
+                                                </div>
+                                                {{-- <div class="form-group">
                                                     <label for="gproduct">Group Product<span class="text-danger">*</span></label>
                                                     <input type="dropdown" class="form-control" placeholder="Group Product" name="gproduct" id="gproduct1">
-                                                </div>
+                                                </div> --}}
                                             </div>
                                         </div>
                                     </div>
@@ -193,7 +190,7 @@
                     <div class="table-responsive">
                         <table id="basic" class="table table table-striped table-bordered table-hover dataTable" role="grid" aria-describedby="add-row_info">
                             <thead class="table-light">
-                                <tr style="background-color: teal; color: white;" role="row">
+                                <tr style="background-color: #5A639C; color: white;" role="row">
                                     <th style="width:5%">No</th>
                                     <th style="width:25%">PIC</th>
                                     <th style="width:30">Email</th>
@@ -236,6 +233,10 @@
 @endsection
 @section('myscript')
 <script>
+    $(document).ready(function() {
+    $('#basic').DataTable();      
+    });
+
    $("#basic").on('click', '.edit', function(){
     var id = $(this).attr('data-id');
     $.ajax({

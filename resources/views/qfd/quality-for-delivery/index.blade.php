@@ -1,7 +1,6 @@
 @extends('qfd.layouts.master')
-
 @section('content')
-<div class="page-inner">
+<div class="page-inner" >
     <div class="page-header">
     </div>
     <div class="row">
@@ -40,12 +39,12 @@
             
                 @if(\Session::has('delete'))
                         <div class="alert alert-danger alert-dismissible fade show">
-                            <p>{{ \Session::get('delete') }}</p>
+                            <p>{{ \Session:: get('delete') }}</p>
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
                         </div>     
                 @endif
                 <div class="card-body">
-                    <div class="dt-layout-row"><div class="dt-layout-cell dt-start "><div class="dt-length"><select name="new_datatables_length" aria-controls="new_datatables" class="dt-input" id="dt-length-0"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><label for="dt-length-0"> entries per page</label></div></div><div class="dt-layout-cell dt-end "><div class="dt-search"><label for="dt-search-0">Search:</label><input type="search" class="dt-input" id="dt-search-0" placeholder="" aria-controls="new_datatables"></div></div></div>
+                    {{-- <div class="dt-layout-row"><div class="dt-layout-cell dt-start "><div class="dt-length"><select name="new_datatables_length" aria-controls="new_datatables" class="dt-input" id="dt-length-0"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select><label for="dt-length-0"> entries per page</label></div></div><div class="dt-layout-cell dt-end "><div class="dt-search"><label for="dt-search-0">Search:</label><input type="search" class="dt-input" id="dt-search-0" placeholder="" aria-controls="new_datatables"></div></div></div> --}}
                     <!-- Add Modal -->
                     <div class="modal fade" id="addRowModal" role="dialog" aria-hidden="true">
                         <div class="modal-dialog modal-lg" role="document">
@@ -65,7 +64,8 @@
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label for="po_interco">PO Interco<span class="text-danger">*</span></label>
-                                                    <select class="form-control" role="listbox" name="po_interco" id="po_interco" onchange="getCustomer()">
+                                                    <select class="form-control select2" role="listbox" name="po_interco" id="po_interco" onchange="getCustomer()">
+                                                        <option value="">select an option</option>
                                                         @foreach($po_interco as $item)
                                                         <option value="{{$item->PONUM}},{{$item->PRODUCTDESC}}">{{ $item->PONUM }} |{{$item->PRODUCTDESC}}</option>
                                                         @endforeach
@@ -103,7 +103,7 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="location">Location<span class="text-danger">*</span></label>
-                                                    <select class="form-control" name="location" id="location">
+                                                    <select class="form-control select2" name="location" id="location">
                                                         <option value="">select an option</option>
                                                         @if(isset($data['data']))
                                                             @foreach($data['data'] as $loc)
@@ -220,7 +220,7 @@
                     <div class="table-responsive">
                         <table id="basic" class="table table table-striped table-bordered table-hover dataTable" role="grid" aria-describedby="add-row_info">
                             <thead class="table-light">
-                                <tr style="background-color: teal; color: white;" role="row">
+                                <tr style="background-color:#5A639C ; color: white;" role="row">
                                     <th style="width:5%">No</th>
                                     <th style="width:30">PO Interco</th>
                                     <th style="width:10%">Product No</th>
@@ -228,7 +228,7 @@
                                     <th style="width:20%">Customer</th>
                                     <th style="width:20%">Request Delivery</th>
                                     <th style="width:20%">End Customer</th>
-                                    <th style="width:10%" class="sorting" tabindex="0" aria-controls="add-row" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending">Action</th>
+                                    <th style="width:10%">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -246,10 +246,10 @@
                                          <td>{{ $value->end_customer }}</td>
                                          <td>
                                             <div class="form-button-action">
-                                                <a href="{{url('/detail-project-new/'.$value->projectName)}}" type="button" data-toggle="tooltip" title="Detail" class="btn btn-link btn-primary btn-lg" data-original-title="Detail"> 
-                                                {{-- <a href="{{url('/detail-meeting-qfd'.$value->id)}}" type="button" data-toggle="tooltip" title="Detail" class="btn btn-link btn-primary btn-lg" data-original-title="Detail">  --}}
+                                                <a href="{{url('/detail-project-new/'.$value->po_interco)}}" type="button" data-toggle="tooltip" title="Detail" class="btn btn-link btn-primary btn-lg" data-original-title="Detail"> 
+                                                {{-- <a href="{{url('/detail-meeting-qfd/'.$value->id)}}" type="button" data-toggle="tooltip" title="Detail" class="btn btn-link btn-primary btn-lg" data-original-title="Detail">  --}}
                                                 <i class="fa fa-eye"></i>
-                                                </a>
+                                            
                                             </div>
                                          </td>
                                 </tr>
@@ -283,7 +283,9 @@
         });
     });
 
+
     $(document).ready(function() {
+        $('#basic').DataTable();       
         // Initialize Select2
         $('.js-example-basic-multiple').select2({
             allowClear: true,
